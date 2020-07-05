@@ -1,16 +1,12 @@
 package com.nikhil.synerzipgame.views.activities;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
-import android.widget.AdapterView;
-
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -28,8 +24,6 @@ import com.nikhil.synerzipgame.network.ApiInterface;
 import com.nikhil.synerzipgame.views.adapters.EntryGridViewAdapter;
 import com.nikhil.synerzipgame.views.adapters.EntryListViewAdapter;
 import com.nikhil.synerzipgame.viewModel.EntryViewModel;
-
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private int currentViewMode = 0;
 
     static final int VIEW_MODE_LISTVIEW = 0;
+
     static final int VIEW_MODE_GRIDVIEW = 1;
 
     List<EntryTable> al_entryTable;
@@ -87,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         t.start();
         try {
             t.join();
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -127,7 +122,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 switchView();
             }
         });
-
     }
 
     private void iniViews() {
