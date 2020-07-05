@@ -1,19 +1,22 @@
 package com.nikhil.synerzipgame.views.activities;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.AdapterView;
-import android.widget.ListView;
 
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
@@ -26,6 +29,8 @@ import com.nikhil.synerzipgame.views.adapters.EntryGridViewAdapter;
 import com.nikhil.synerzipgame.views.adapters.EntryListViewAdapter;
 import com.nikhil.synerzipgame.viewModel.EntryViewModel;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +38,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private static final String TAG = "MainActivity";
 
@@ -47,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewStub stubList;
 
-    private ListView listView;
+    private RecyclerView listView;
 
     private RecyclerView gridView;
 
@@ -137,26 +142,17 @@ public class MainActivity extends AppCompatActivity {
         stubList.inflate();
         stubGrid.inflate();
 
-        listView = (ListView) findViewById(R.id.mylistview);
+        listView = (RecyclerView) findViewById(R.id.mylistview);
         gridView = (RecyclerView) findViewById(R.id.mygridview);
 
-        //Get current view mode in share reference
         SharedPreferences sharedPreferences = getSharedPreferences("ViewMode", MODE_PRIVATE);
-        currentViewMode = sharedPreferences.getInt("currentViewMode", VIEW_MODE_LISTVIEW);//Default is view listview
-        //Register item lick
-        listView.setOnItemClickListener(onItemClick);
-        //gridView.setOnClickListener(onItemClick);
+        currentViewMode = sharedPreferences.getInt("currentViewMode", VIEW_MODE_LISTVIEW);
+
+        entryListViewAdapter = new EntryListViewAdapter(this, R.layout.entry_list_item, al_entryTable);
+        entryGridViewAdapter = new EntryGridViewAdapter(this, R.layout.entry_grid_item, al_entryTable);
 
         switchView();
     }
-
-    AdapterView.OnItemClickListener onItemClick = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            //Do any thing when user click to item
-
-        }
-    };
 
     private void switchView() {
 
@@ -174,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
     private void setAdapters() {
         if (VIEW_MODE_LISTVIEW == currentViewMode) {
             entryListViewAdapter = new EntryListViewAdapter(this, R.layout.entry_list_item, al_entryTable);
+            listView.setLayoutManager(new LinearLayoutManager(this));
             listView.setAdapter(entryListViewAdapter);
         } else {
             entryGridViewAdapter = new EntryGridViewAdapter(this, R.layout.entry_grid_item, al_entryTable);
@@ -215,6 +212,10 @@ public class MainActivity extends AppCompatActivity {
                 entryTable.setCategory_label(entry.getCategory().getAttributes().getLabel());
                 entryTable.setCategory_scheme(entry.getCategory().getAttributes().getScheme());
                 entryTable.setCategory_term(entry.getCategory().getAttributes().getTerm());
+                if (entry.getReleaseDate() != null)
+                    entryTable.setReleaseDate(entry.getReleaseDate().getAttributes().getLabel());
+                else
+                    entryTable.setReleaseDate("");
                 entryViewModel.insertEntry(entryTable);
                 al_entryTable.add(entryTable);
             }
@@ -245,7 +246,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
+
+        MenuItem menuItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView.setOnQueryTextListener(this);
+
+        return true;
     }
 
     @Override
@@ -267,6 +273,29 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
         }
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+
+        String userInput = newText.toLowerCase();
+        List<EntryTable> entryTables = new ArrayList<>();
+
+        for (EntryTable entryTable : al_entryTable) {
+            if (entryTable.getName().trim().toLowerCase().contains(userInput)) {
+                entryTables.add(entryTable);
+            }
+        }
+
+        entryGridViewAdapter.setData(entryTables);
+        entryListViewAdapter.setData(entryTables);
+
         return true;
     }
 }

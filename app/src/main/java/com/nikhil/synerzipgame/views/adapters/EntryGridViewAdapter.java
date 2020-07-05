@@ -1,11 +1,14 @@
 package com.nikhil.synerzipgame.views.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +23,9 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.nikhil.synerzipgame.R;
 import com.nikhil.synerzipgame.entitiesForDB.EntryTable;
+import com.nikhil.synerzipgame.views.activities.EntryDetailsActivity;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -72,6 +78,16 @@ public class EntryGridViewAdapter extends RecyclerView.Adapter<EntryGridViewAdap
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
                 .into(holder.img);
+
+        holder.cd_maincard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, EntryDetailsActivity.class);
+                Parcelable wrapped = Parcels.wrap(entryTable);
+                intent.putExtra("entryTable", wrapped);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -84,6 +100,7 @@ public class EntryGridViewAdapter extends RecyclerView.Adapter<EntryGridViewAdap
         ImageView img;
         TextView txtTitle;
         TextView txtDescription;
+        LinearLayout cd_maincard;
 
         public ViewHolder(View view) {
             super(view);
@@ -91,8 +108,7 @@ public class EntryGridViewAdapter extends RecyclerView.Adapter<EntryGridViewAdap
             img = (ImageView) view.findViewById(R.id.imageView);
             txtTitle = (TextView) view.findViewById(R.id.tv_name);
             txtDescription = (TextView) view.findViewById(R.id.tv_tile);
+            cd_maincard = (LinearLayout) view.findViewById(R.id.cd_maincard);
         }
-
-
     }
 }

@@ -4,6 +4,9 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import org.parceler.Parcel;
+
+@Parcel
 @Entity
 public class EntryTable {
 
@@ -49,8 +52,10 @@ public class EntryTable {
     @ColumnInfo(name = "category_scheme")
     String category_scheme;
 
-    public void setUid(int uid)
-    {
+    @ColumnInfo(name = "releaseDate")
+    String releaseDate;
+
+    public void setUid(int uid) {
         this.uid = uid;
     }
 
@@ -156,5 +161,13 @@ public class EntryTable {
 
     public void setCategory_scheme(String category_scheme) {
         this.category_scheme = category_scheme;
+    }
+
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
     }
 }

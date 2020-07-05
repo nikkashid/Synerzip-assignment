@@ -1,16 +1,19 @@
 package com.nikhil.synerzipgame.views.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -20,44 +23,44 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.nikhil.synerzipgame.R;
 import com.nikhil.synerzipgame.entitiesForDB.EntryTable;
+import com.nikhil.synerzipgame.views.activities.EntryDetailsActivity;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
-public class EntryListViewAdapter extends ArrayAdapter<EntryTable> {
+public class EntryListViewAdapter extends RecyclerView.Adapter<EntryListViewAdapter.ViewHolder> {
 
     Context context;
 
     List<EntryTable> al_entryTables;
 
     public EntryListViewAdapter(@NonNull Context context, int resource, @NonNull List<EntryTable> objects) {
-        super(context, resource, objects);
         this.context = context;
         this.al_entryTables = objects;
     }
 
-    public void setData(List<EntryTable> al_entryTables){
+    public void setData(List<EntryTable> al_entryTables) {
         this.al_entryTables = al_entryTables;
         notifyDataSetChanged();
     }
 
     @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.entry_list_item, parent, false);
+        ViewHolder viewHolder = new ViewHolder(v);
+        return viewHolder;
+    }
 
-        if (null == view) {
-            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.entry_list_item, null);
-        }
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        ImageView img = (ImageView) view.findViewById(R.id.imageView);
-        TextView txtTitle = (TextView) view.findViewById(R.id.tv_name);
-        TextView txtDescription = (TextView) view.findViewById(R.id.tv_tile);
+        EntryTable entryTable = al_entryTables.get(position);
 
-        EntryTable entryTable = getItem(position);
-
-        txtTitle.setText(entryTable.getName());
-        txtDescription.setText(entryTable.getTitle());
+        holder.txtTitle.setText(entryTable.getName());
+        holder.txtDescription.setText(entryTable.getTitle());
 
         Glide.with(context)
                 .load(entryTable.getImage())
@@ -74,8 +77,38 @@ public class EntryListViewAdapter extends ArrayAdapter<EntryTable> {
                 })
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
-                .into(img);
+                .into(holder.img);
 
-        return view;
+        holder.cd_maincard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, EntryDetailsActivity.class);
+                Parcelable wrapped = Parcels.wrap(entryTable);
+                intent.putExtra("entryTable", wrapped);
+                context.startActivity(intent);
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return al_entryTables.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        ImageView img;
+        TextView txtTitle;
+        TextView txtDescription;
+        LinearLayout cd_maincard;
+
+        public ViewHolder(View view) {
+            super(view);
+
+            img = (ImageView) view.findViewById(R.id.imageView);
+            txtTitle = (TextView) view.findViewById(R.id.tv_name);
+            txtDescription = (TextView) view.findViewById(R.id.tv_tile);
+            cd_maincard = (LinearLayout) view.findViewById(R.id.cd_maincard);
+        }
     }
 }

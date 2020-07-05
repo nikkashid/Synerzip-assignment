@@ -4,12 +4,13 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/mylistview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@null"
-        android:dividerHeight="0dp"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:visibility="visible"
         tools:listitem="@layout/entry_list_item"/>
 
 </FrameLayout>

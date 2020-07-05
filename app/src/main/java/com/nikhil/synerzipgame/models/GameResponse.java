@@ -423,7 +423,7 @@ public class GameResponse {
         @SerializedName("term")
         private String term;
         @Expose
-        @SerializedName("id")
+        @SerializedName("im:id")
         private String id;
 
         public String getLabel() {
