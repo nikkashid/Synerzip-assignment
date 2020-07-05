@@ -1,4 +1,4 @@
-package com.nikhil.synerzipgame.ui.activities;
+package com.nikhil.synerzipgame.views.activities;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -22,8 +22,8 @@ import com.nikhil.synerzipgame.entitiesForDB.EntryTable;
 import com.nikhil.synerzipgame.models.GameResponse;
 import com.nikhil.synerzipgame.network.ApiClient;
 import com.nikhil.synerzipgame.network.ApiInterface;
-import com.nikhil.synerzipgame.ui.adapters.EntryGridViewAdapter;
-import com.nikhil.synerzipgame.ui.adapters.EntryListViewAdapter;
+import com.nikhil.synerzipgame.views.adapters.EntryGridViewAdapter;
+import com.nikhil.synerzipgame.views.adapters.EntryListViewAdapter;
 import com.nikhil.synerzipgame.viewModel.EntryViewModel;
 
 import java.util.ArrayList;

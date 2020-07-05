@@ -1,4 +1,4 @@
-package com.nikhil.synerzipgame.ui.adapters;
+package com.nikhil.synerzipgame.views.adapters;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
