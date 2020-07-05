@@ -8,14 +8,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.nikhil.synerzipgame.R;
 import com.nikhil.synerzipgame.entitiesForDB.EntryTable;
@@ -49,7 +49,9 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView listView;
 
-    private GridView gridView;
+    private RecyclerView gridView;
+
+    private RecyclerView.LayoutManager layoutManager;
 
     private int currentViewMode = 0;
 
@@ -117,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
             public void onChanged(List<EntryTable> entries) {
                 Log.d(TAG, "onChanged: entry table onObserver :" + entries.size());
                 al_entryTable = entries;
-                setAdapters();
+                switchView();
             }
         });
 
@@ -136,14 +138,14 @@ public class MainActivity extends AppCompatActivity {
         stubGrid.inflate();
 
         listView = (ListView) findViewById(R.id.mylistview);
-        gridView = (GridView) findViewById(R.id.mygridview);
+        gridView = (RecyclerView) findViewById(R.id.mygridview);
 
         //Get current view mode in share reference
         SharedPreferences sharedPreferences = getSharedPreferences("ViewMode", MODE_PRIVATE);
         currentViewMode = sharedPreferences.getInt("currentViewMode", VIEW_MODE_LISTVIEW);//Default is view listview
         //Register item lick
         listView.setOnItemClickListener(onItemClick);
-        gridView.setOnItemClickListener(onItemClick);
+        //gridView.setOnClickListener(onItemClick);
 
         switchView();
     }
@@ -175,6 +177,8 @@ public class MainActivity extends AppCompatActivity {
             listView.setAdapter(entryListViewAdapter);
         } else {
             entryGridViewAdapter = new EntryGridViewAdapter(this, R.layout.entry_grid_item, al_entryTable);
+            layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+            gridView.setLayoutManager(layoutManager);
             gridView.setAdapter(entryGridViewAdapter);
         }
     }

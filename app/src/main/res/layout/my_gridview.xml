@@ -1,23 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#d1d1d1">
+    android:layout_height="match_parent">
 
-    <GridView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/mygridview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/mygridview"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
-        android:columnWidth="100dp"
-        android:gravity="center|bottom"
-        android:horizontalSpacing="10dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:numColumns="3"
-        android:stretchMode="spacingWidth"
-        android:verticalSpacing="20dp"
-        android:visibility="visible"
-        />
-</FrameLayout>
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:visibility="visible" />
+
+</LinearLayout>

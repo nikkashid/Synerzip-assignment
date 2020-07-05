@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -23,41 +24,38 @@ import com.nikhil.synerzipgame.entitiesForDB.EntryTable;
 
 import java.util.List;
 
-public class EntryGridViewAdapter extends ArrayAdapter<EntryTable> {
+public class EntryGridViewAdapter extends RecyclerView.Adapter<EntryGridViewAdapter.ViewHolder> {
 
     Context context;
 
     List<EntryTable> al_entryTables;
 
     public EntryGridViewAdapter(@NonNull Context context, int resource, @NonNull List<EntryTable> objects) {
-        super(context, resource, objects);
         this.context = context;
         this.al_entryTables = objects;
     }
 
-    public void setData(List<EntryTable> al_entryTables){
+    public void setData(List<EntryTable> al_entryTables) {
         this.al_entryTables = al_entryTables;
         notifyDataSetChanged();
     }
 
     @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.entry_grid_item, parent, false);
+        ViewHolder viewHolder = new ViewHolder(v);
+        return viewHolder;
+    }
 
-        if (null == view) {
-            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.entry_grid_item, null);
-        }
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        EntryTable entryTable = getItem(position);
+        EntryTable entryTable = al_entryTables.get(position);
 
-        ImageView img = (ImageView) view.findViewById(R.id.imageView);
-        TextView txtTitle = (TextView) view.findViewById(R.id.tv_name);
-        TextView txtDescription = (TextView) view.findViewById(R.id.tv_tile);
-
-        txtTitle.setText(entryTable.getName());
-        txtDescription.setText(entryTable.getTitle());
+        holder.txtTitle.setText(entryTable.getName());
+        holder.txtDescription.setText(entryTable.getTitle());
 
         Glide.with(context)
                 .load(entryTable.getImage())
@@ -74,8 +72,28 @@ public class EntryGridViewAdapter extends ArrayAdapter<EntryTable> {
                 })
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
-                .into(img);
+                .into(holder.img);
+    }
 
-        return view;
+    @Override
+    public int getItemCount() {
+        return al_entryTables.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        ImageView img;
+        TextView txtTitle;
+        TextView txtDescription;
+
+        public ViewHolder(View view) {
+            super(view);
+
+            img = (ImageView) view.findViewById(R.id.imageView);
+            txtTitle = (TextView) view.findViewById(R.id.tv_name);
+            txtDescription = (TextView) view.findViewById(R.id.tv_tile);
+        }
+
+
     }
 }
