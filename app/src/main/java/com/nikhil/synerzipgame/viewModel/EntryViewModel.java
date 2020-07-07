@@ -18,18 +18,10 @@ public class EntryViewModel extends AndroidViewModel {
     public EntryViewModel(@NonNull Application application) {
         super(application);
         entryRepository = new EntryRepository(getApplication());
-        entryRepository.getAll();
+        entryRepository.checkData();
     }
 
     public LiveData<List<EntryTable>> getAll() {
         return entryRepository.getAll();
-    }
-
-    public void insertEntry(EntryTable entryTable) {
-        entryRepository.insert(entryTable);
-    }
-
-    public int getDataCount() {
-        return entryRepository.getDataCount();
     }
 }

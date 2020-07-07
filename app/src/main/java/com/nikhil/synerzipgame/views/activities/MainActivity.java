@@ -18,29 +18,19 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.nikhil.synerzipgame.R;
 import com.nikhil.synerzipgame.entitiesForDB.EntryTable;
-import com.nikhil.synerzipgame.models.GameResponse;
-import com.nikhil.synerzipgame.network.ApiClient;
-import com.nikhil.synerzipgame.network.ApiInterface;
 import com.nikhil.synerzipgame.views.adapters.EntryGridViewAdapter;
 import com.nikhil.synerzipgame.views.adapters.EntryListViewAdapter;
 import com.nikhil.synerzipgame.viewModel.EntryViewModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private static final String TAG = "MainActivity";
 
-    ApiInterface apiInterface;
-
     EntryViewModel entryViewModel;
-
-    int dbCount = 0;
 
     private ViewStub stubGrid;
 
@@ -71,54 +61,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         iniViews();
 
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "Thread dataCount:" + entryViewModel.getDataCount());
-                dbCount = entryViewModel.getDataCount();
-            }
-        });
-        t.setPriority(10);
-        t.start();
-        try {
-            t.join();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (dbCount == 0) {
-
-            apiInterface = ApiClient.getClient().create(ApiInterface.class);
-
-            Call<GameResponse> call = apiInterface.getEntries();
-            call.enqueue(new Callback<GameResponse>() {
-                @Override
-                public void onResponse(Call<GameResponse> call, Response<GameResponse> response) {
-                    Log.d(TAG, "onResponse: " + response.body());
-
-                    try {
-                        GameResponse gameResponse = response.body();
-                        insertDataInDataBase(gameResponse);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<GameResponse> call, Throwable t) {
-                    Log.e(TAG, "onFailure: ", t);
-                    call.cancel();
-                }
-            });
-        } else {
-            //notifyDataSetChanged();
-        }
-
         entryViewModel.getAll().observe(this, new Observer<List<EntryTable>>() {
             @Override
             public void onChanged(List<EntryTable> entries) {
                 Log.d(TAG, "onChanged: entry table onObserver :" + entries.size());
                 al_entryTable = entries;
+                Collections.sort(al_entryTable);
                 switchView();
             }
         });
@@ -172,69 +120,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             gridView.setLayoutManager(layoutManager);
             gridView.setAdapter(entryGridViewAdapter);
         }
-    }
-
-    private void insertDataInDataBase(GameResponse gameResponse) {
-
-        try {
-
-            GameResponse.Feed feed = gameResponse.getFeed();
-
-            List<GameResponse.Entry> entries = feed.getEntry();
-
-            for (int i = 0; i < entries.size(); i++) {
-
-                Log.d(TAG, "insertDataInDataBase: position " + i);
-                GameResponse.Entry entry = entries.get(i);
-                EntryTable entryTable = new EntryTable();
-                entryTable.setName(entry.getName().getLabel());
-                if (entry.getRights() != null)
-                    entryTable.setRights(entry.getRights().getLabel());
-                else
-                    entryTable.setRights("");
-                entryTable.setPrice_amount(entry.getPrice().getAttributes().getAmount());
-                entryTable.setPrice_currency(entry.getPrice().getAttributes().getCurrency());
-                entryTable.setImage(entry.getImage().get(2).getLabel());
-                entryTable.setArtist_label(entry.getArtist().getLabel());
-                if (entry.getArtist().getAttributes() != null)
-                    entryTable.setArtist_link(entry.getArtist().getAttributes().getHref());
-                else
-                    entryTable.setArtist_link("");
-                entryTable.setTitle(entry.getTitle().getLabel());
-                entryTable.setLink(entry.getLink().getAttributes().getHref());
-                entryTable.setCategory_id(entry.getCategory().getAttributes().getId());
-                entryTable.setCategory_label(entry.getCategory().getAttributes().getLabel());
-                entryTable.setCategory_scheme(entry.getCategory().getAttributes().getScheme());
-                entryTable.setCategory_term(entry.getCategory().getAttributes().getTerm());
-                if (entry.getReleaseDate() != null)
-                    entryTable.setReleaseDate(entry.getReleaseDate().getAttributes().getLabel());
-                else
-                    entryTable.setReleaseDate("");
-                entryViewModel.insertEntry(entryTable);
-                al_entryTable.add(entryTable);
-            }
-
-            notifyDataSetChanged();
-
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(TAG, "insertDataInDataBase: dataCount:" + entryViewModel.getDataCount());
-                }
-            });
-            t.setPriority(10);
-            t.start();
-            t.join();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void notifyDataSetChanged() {
-        entryListViewAdapter.notifyDataSetChanged();
-        entryGridViewAdapter.notifyDataSetChanged();
     }
 
     @Override

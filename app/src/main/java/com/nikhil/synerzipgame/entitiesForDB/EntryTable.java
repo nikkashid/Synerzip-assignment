@@ -8,7 +8,7 @@ import org.parceler.Parcel;
 
 @Parcel
 @Entity
-public class EntryTable {
+public class EntryTable implements Comparable<EntryTable> {
 
     @PrimaryKey(autoGenerate = true)
     public int uid;
@@ -169,5 +169,10 @@ public class EntryTable {
 
     public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    @Override
+    public int compareTo(EntryTable o) {
+        return getName().toLowerCase().compareTo(o.getName().toLowerCase());
     }
 }
