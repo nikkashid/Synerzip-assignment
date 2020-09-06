@@ -11,7 +11,6 @@ import com.nikhil.synerzipgame.network.ApiClient;
 import com.nikhil.synerzipgame.network.ApiInterface;
 
 import android.app.Application;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -58,6 +57,8 @@ public class EntryRepository
 						{
 							getDataFromServer();
 						}
+
+						getDBCountFromDB();
 					}
 
 					@Override
@@ -163,23 +164,40 @@ public class EntryRepository
 
 	public void insert(EntryTable entryTable)
 	{
-		new InsertDataAsyncTask(entryDao).execute(entryTable);
+		entryDao.insert(entryTable).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+				.subscribeWith(new DisposableSingleObserver()
+				{
+					@Override
+					public void onSuccess(Object o)
+					{
+						Log.d(TAG, "Data inserted successfully");
+						getDBCountFromDB();
+					}
+
+					@Override
+					public void onError(Throwable e)
+					{
+						Log.e(TAG, e.getMessage());
+					}
+				});
 	}
 
-	private static class InsertDataAsyncTask extends AsyncTask<EntryTable, Void, Void>
+	private void getDBCountFromDB()
 	{
-		private EntryDao entityDao;
+		entryDao.getDataCount().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+				.subscribeWith(new DisposableSingleObserver<Long>()
+				{
+					@Override
+					public void onSuccess(Long aLong)
+					{
+						Log.d(TAG, "Data count from DB :" + aLong);
+					}
 
-		private InsertDataAsyncTask(EntryDao entityDao)
-		{
-			this.entityDao = entityDao;
-		}
-
-		@Override
-		protected Void doInBackground(EntryTable... entryTable)
-		{
-			entityDao.insert(entryTable[0]);
-			return null;
-		}
+					@Override
+					public void onError(Throwable e)
+					{
+						Log.e(TAG, e.getMessage());
+					}
+				});
 	}
 }

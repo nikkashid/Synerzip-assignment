@@ -7,7 +7,6 @@ import retrofit2.http.GET;
 
 public interface ApiInterface
 {
-
 	@GET("/us/rss/newfreeapplications/limit=2/json")
 	Single<GameResponse> getEntries();
 }
