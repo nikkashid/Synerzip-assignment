@@ -171,7 +171,6 @@ public class EntryRepository
 					public void onSuccess(Object o)
 					{
 						Log.d(TAG, "Data inserted successfully");
-						getDBCountFromDB();
 					}
 
 					@Override
