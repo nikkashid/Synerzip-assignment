@@ -3,26 +3,25 @@ package com.nikhil.synerzipgame.network;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ApiClient {
+public class ApiClient
+{
+	public static Retrofit retrofit = null;
 
-    public static Retrofit retrofit = null;
+	public static Retrofit getClient()
+	{
+		HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+		interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+		OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
 
-    public static Retrofit getClient() {
+		retrofit = new Retrofit.Builder().baseUrl("https://itunes.apple.com")
+				.addConverterFactory(GsonConverterFactory.create())
+				.addCallAdapterFactory(RxJava2CallAdapterFactory.create()).client(client).build();
 
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+		return retrofit;
 
-        retrofit = new Retrofit.Builder()
-                .baseUrl("https://itunes.apple.com")
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build();
-
-        return retrofit;
-
-    }
+	}
 
 }

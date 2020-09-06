@@ -2,11 +2,12 @@ package com.nikhil.synerzipgame.network;
 
 import com.nikhil.synerzipgame.models.GameResponse;
 
-import retrofit2.Call;
+import io.reactivex.Single;
 import retrofit2.http.GET;
 
-public interface ApiInterface {
+public interface ApiInterface
+{
 
-    @GET("/us/rss/newfreeapplications/limit=2/json")
-    Call<GameResponse> getEntries();
+	@GET("/us/rss/newfreeapplications/limit=2/json")
+	Single<GameResponse> getEntries();
 }
